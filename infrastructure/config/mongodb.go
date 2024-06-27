@@ -24,7 +24,7 @@ func NewDbTest() *mongo.Database {
 	connection, err := dbInstance.Connect()
 
 	if err != nil {
-		log.Fatalf("Test db error: %v", err)
+		log.Fatalf("Test db error: ")
 	}
 
 	return connection
