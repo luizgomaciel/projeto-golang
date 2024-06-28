@@ -14,7 +14,6 @@ func NewAccountService() AcccountService {
 }
 
 func (s *AcccountService) InsertAccount(typeAccount int, number int) error {
-
 	accounts, err := jobs.NewJobAccount(typeAccount, number)
 	if err != nil {
 		return err
