@@ -1,4 +1,4 @@
-# [POC] Serviço de geração de pool de massa do TDM em `Golang`
+# `POC` Serviço de geração de pool de massa do TDM em Golang
 
 ## Configurando ambiente
 
@@ -29,4 +29,5 @@ Para rodar a app siga os seguintes passos:
 ## Validando a execução
 
 * Acesse a administração do Mongo Express com `http://localhost:8081/`
+
 `OBS.: Se a execução não criar as collections via auto migrate, criar o database tdm e dentro do database as collections accounts e loans` 
