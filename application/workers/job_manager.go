@@ -25,7 +25,6 @@ type JobManager struct {
 func NewJobManager(db *mongo.Database, rabbitMQ *config.RabbitMQ, messageChannel chan amqp.Delivery) *JobManager {
 	return &JobManager{
 		Db:             db,
-		Domain:         jobs.JobAccount{},
 		MessageChannel: messageChannel,
 		JobWorkerStack: make(chan struct{}, 10), // Limita o número de workers ativos
 		RabbitMQ:       rabbitMQ,
@@ -39,7 +38,7 @@ func (j *JobManager) Start(ch *amqp.Channel) {
 		log.Fatalf("error loading var: CONCURRENCY_WORKERS.")
 	}
 
-	acccountService := services.AcccountService{}
+	acccountService := services.NewAccountService()
 	acccountService.AccountRepository = repository.AccountRepositoryDb{Db: j.Db}
 
 	var wg sync.WaitGroup

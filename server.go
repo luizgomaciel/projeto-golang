@@ -24,8 +24,6 @@ func main() {
 	messageChannel := make(chan amqp.Delivery)
 
 	dbConnection, err := db.Connect()
-	// ctx := context.Background()
-	// defer dbConnection.Client().Disconnect(ctx)
 
 	if err != nil {
 		log.Fatalf("error connecting to DB")

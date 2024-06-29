@@ -13,17 +13,17 @@ func NewAccountService() AcccountService {
 	return AcccountService{}
 }
 
-func (s *AcccountService) InsertAccount(typeAccount int, number int) error {
+func (s *AcccountService) InsertAccount(typeAccount int, number int) (*[]jobs.Account, error) {
 	accounts, err := jobs.NewJobAccount(typeAccount, number)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, ac := range accounts.Accounts {
 		if _, err := s.AccountRepository.Insert(&ac); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	return &accounts.Accounts, nil
 }

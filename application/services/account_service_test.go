@@ -40,7 +40,7 @@ func TestInsertAccount(t *testing.T) {
 	accountService := services.NewAccountService()
 	accountService.AccountRepository = repo
 
-	err := accountService.InsertAccount(2, 10)
+	_, err := accountService.InsertAccount(2, 10)
 	require.Nil(t, err)
 
 	ctx := context.Background()
