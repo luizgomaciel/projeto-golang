@@ -1,0 +1,18 @@
+type Account {
+  accountNumber: String!
+  accountType: String!
+  customerName: String!
+  loanProducts: [Products!]!
+}
+
+type Products {
+  id: ID!
+  loanType : String!
+  numberInstallments: Int!
+  valueInstallments: Float!
+  totalInstalments: Float!
+}
+
+type Query {
+  Account: [Account!]!
+}

@@ -31,15 +31,16 @@ func NewDbTest() *mongo.Database {
 }
 
 func (d *Database) Connect() (*mongo.Database, error) {
-	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_CONNECT")))
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_CONNECT"))
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	err = client.Connect(ctx)
+	err = client.Ping(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
