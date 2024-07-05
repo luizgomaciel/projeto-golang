@@ -31,3 +31,50 @@ Para rodar a app siga os seguintes passos:
 * Acesse a administração do Mongo Express com `http://localhost:8081/`
 
 `OBS.: Se a execução não criar as collections via auto migrate, criar o database tdm e dentro do database as collections accounts e loans` 
+
+# GraphQL
+
+* Acesse o GraphQL Playground com `http://localhost:8080/`
+
+## Schema
+
+```
+type Account {
+  accountNumber: String!
+  accountType: String!
+  customerName: String!
+  loanProducts: [Products!]!
+}
+
+type Products {
+  id: ID!
+  loanType : String!
+  numberInstallments: Int!
+  valueInstallments: Float!
+  totalInstalments: Float!
+}
+
+type Query {
+  Account: [Account!]!
+}
+```
+
+## Query
+
+```
+query Account {
+  Account {
+    accountNumber
+    accountType
+    customerName
+    loanProducts {
+      id
+      loanType
+      numberInstallments
+      valueInstallments
+      totalInstalments
+    }
+  }
+}
+```
+

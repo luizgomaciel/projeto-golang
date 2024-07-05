@@ -28,3 +28,7 @@ func (s *LoanService) InsertLoan(accounts *[]jobs.Account) (*[]jobs.Account, err
 
 	return accounts, nil
 }
+
+func (s *LoanService) FindAllLoansByAccountNumber(accountNumber string) (*jobs_loans.Loan, error) {
+	return s.LoanRepository.FindAllByAccountNumber(accountNumber)
+}
