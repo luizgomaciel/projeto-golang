@@ -9,6 +9,19 @@ type Account struct {
 	LoanProducts  []*Products `json:"loanProducts"`
 }
 
+type JobQueue struct {
+	TypeAccount int      `json:"typeAccount"`
+	Quantity    int      `json:"quantity"`
+	Products    []string `json:"products"`
+}
+
+type JobQueueResponse struct {
+	IsStarted *bool `json:"isStarted,omitempty"`
+}
+
+type Mutation struct {
+}
+
 type Products struct {
 	ID                 string  `json:"id"`
 	LoanType           string  `json:"loanType"`

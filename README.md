@@ -77,4 +77,18 @@ query Account {
   }
 }
 ```
+## Mutation (Adiciona na fila do RabbitMQ)
+
+```
+mutation includeJobQueue {
+  includeJobQueue (input: {
+    typeAccount: 2,
+		quantity: 1000,
+    products: ["LOAN_PRODUCT"]
+  }) {
+    isStarted
+  }
+}
+```
+
 
