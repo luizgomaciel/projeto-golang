@@ -1,6 +1,9 @@
 package jobs
 
 import (
+	"encoder/application/utils"
+	rand_math "math/rand"
+	"math/rand/v2"
 	"strconv"
 	"time"
 
@@ -18,8 +21,11 @@ type Loan struct {
 }
 
 func NewLoan(accountNumber string) Loan {
-	value := 100.10
-	numberOfInstallments := 10
+	min := 5.0
+	max := 1000.0
+	value := min + rand.Float64()*(max-min)
+
+	numberOfInstallments := rand_math.Intn(24)
 	total := value * float64(numberOfInstallments)
 
 	ac := Loan{
@@ -27,8 +33,8 @@ func NewLoan(accountNumber string) Loan {
 		AccountNumber:        accountNumber,
 		Type:                 "LOAN_" + strconv.Itoa(1000),
 		NumberOfInstallments: numberOfInstallments,
-		Value:                value,
-		Total:                total,
+		Value:                utils.RoundToTwoDecimalPlaces(value),
+		Total:                utils.RoundToTwoDecimalPlaces(total),
 		CreatedAt:            time.Now(),
 	}
 
