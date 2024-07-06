@@ -77,7 +77,7 @@ query Account {
   }
 }
 ```
-## Mutation
+## Mutation (Adiciona na fila do RabbitMQ)
 
 ```
 mutation includeJobQueue {
