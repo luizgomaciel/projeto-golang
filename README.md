@@ -57,6 +57,20 @@ type Products {
 type Query {
   Account: [Account!]!
 }
+
+type JobQueueResponse {
+  isStarted: Boolean
+}
+
+input JobQueue {
+  typeAccount: Int!
+  quantity:  Int!
+  products: [String!]!
+}
+
+type Mutation {
+  includeJobQueue(input: JobQueue!): JobQueueResponse!
+}
 ```
 
 ## Query
