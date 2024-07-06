@@ -31,7 +31,7 @@ func JobWorker(messageChannel <-chan amqp.Delivery, acccountService services.Acc
 
 		err := json.Unmarshal(message.Body, &am)
 		if err != nil {
-			log.Fatalf("erro no Unmarshal")
+			log.Fatalf("erro no Unmarshal:", err)
 			return err
 		}
 
