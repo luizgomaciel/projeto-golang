@@ -24,30 +24,45 @@ func NewAccountProducer() AccountProducer {
 	}
 }
 
-func (ap *AccountProducer) Produce(request model.JobQueue) (*model.JobQueueResponse, error) {
+func ProduceMessage(message Message) (bool, error) {
+	pr := NewAccountProducer()
+	return pr.produce(message)
+}
+
+func (ap *AccountProducer) produce(message Message) (bool, error) {
 	ch := ap.Rabbit.Connect()
 	defer ch.Close()
 
 	exchange := os.Getenv("RABBITMQ_NOTIFICATION_EX")
 	routingKey := os.Getenv("RABBITMQ_NOTIFICATION_ROUTING_KEY")
 	contentType := "GOLANG"
+
+	jsonStr, err := json.Marshal(message)
+	if err != nil {
+		return false, err
+	}
+
+	err = ap.Rabbit.Notify(string(jsonStr), contentType, exchange, routingKey)
+	if err != nil {
+		return false, err
+	}
+
+	resp := true
+	return resp, nil
+}
+
+func (ap *AccountProducer) Produce(request model.JobQueue) (*model.JobQueueResponse, error) {
 	message := Message{
 		TypeAccount: request.TypeAccount,
 		Qtd:         request.Quantity,
 		Products:    request.Products,
 	}
 
-	jsonStr, err := json.Marshal(message)
+	resp, err := ap.produce(message)
 	if err != nil {
 		return nil, err
 	}
 
-	err = ap.Rabbit.Notify(string(jsonStr), contentType, exchange, routingKey)
-	if err != nil {
-		return nil, err
-	}
-
-	resp := true
 	return &model.JobQueueResponse{
 		IsStarted: &resp,
 	}, nil

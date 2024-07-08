@@ -1,0 +1,40 @@
+syntax = "proto3";
+package grpc;
+option go_package = "/grpc";
+
+message Account {
+    string accountNumber = 1;
+    string accountType = 2;   
+    string customerName = 3;  
+    repeated Product loanProducts = 4;
+}
+
+message Product {
+    string id = 1;                 
+    string loanType = 2;           
+    int32 numberInstallments = 3;
+    double valueInstallments = 4;
+    double totalInstallments = 5;
+}
+
+message FindAccountsResponse {
+    repeated Account accounts = 1;
+}
+
+
+message CreateResponse {
+    bool isStarted = 1;
+}
+
+message CreateRequest {
+    int32 typeAccount = 1;
+    int32 quantity = 2;
+    repeated string products = 3;
+}
+
+message Empty {}
+
+service AccountServiceRequest {
+    rpc CreateAccounts(CreateRequest) returns (CreateResponse) {}
+    rpc FindAccounts(Empty) returns (FindAccountsResponse) {}
+}

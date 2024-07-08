@@ -4,9 +4,12 @@ import (
 	"encoder/application/services"
 	"encoder/application/workers"
 	"encoder/graph"
+	"encoder/grpc"
+
 	"encoder/infrastructure/config"
 	"encoder/model/repository"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"sync"
@@ -16,10 +19,13 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/streadway/amqp"
 	"go.mongodb.org/mongo-driver/mongo"
+	gr "google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 var db config.Database
 var dbMongoConnection = make(chan *mongo.Database)
+var dbMongoConnection2 = make(chan *mongo.Database)
 
 const defaultPort = "8080"
 
@@ -33,7 +39,7 @@ func init() {
 func main() {
 	var wg sync.WaitGroup
 
-	wg.Add(2)
+	wg.Add(3)
 
 	go func() {
 		defer wg.Done()
@@ -45,7 +51,36 @@ func main() {
 		initTDM()
 	}()
 
+	go func() {
+		defer wg.Done()
+		initGRPC()
+	}()
+
 	wg.Wait()
+}
+
+func initGRPC() {
+
+	repoAccount := repository.AccountRepositoryDb{
+		Db: <-dbMongoConnection2,
+	}
+
+	accountService := services.NewAccountService()
+	accountService.AccountRepository = repoAccount
+
+	grpcServer := gr.NewServer()
+	grpc.RegisterAccountServiceRequestServer(grpcServer, accountService)
+	reflection.Register(grpcServer)
+	port := ":50051"
+	lis, err := net.Listen("tcp", port)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("connect to tcp://localhost%s/ for gRPC", port)
+	if err := grpcServer.Serve(lis); err != nil {
+		panic(err)
+	}
 }
 
 func initTDM() {
@@ -55,6 +90,7 @@ func initTDM() {
 
 	dbConnection, err := db.Connect()
 	dbMongoConnection <- dbConnection
+	dbMongoConnection2 <- dbConnection
 
 	if err != nil {
 		log.Fatalf("error connecting to DB")
