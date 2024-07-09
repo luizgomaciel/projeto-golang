@@ -104,5 +104,29 @@ mutation includeJobQueue {
   }
 }
 ```
+# gRPC
 
+* Acesse o gRPC com o `http://localhost:50051/`
 
+## Contratos (AccountServiceRequest) file: /proto/account_loan.proto
+
+* Cadastro
+
+    `CreateAccounts`
+    
+    `CreateAccountsStream`
+    
+    `CreateAccountsStreamBidirecional`
+
+```
+{
+    "typeAccount": 1,
+    "quantity": 100,
+    "products": [
+         "LOAN_PRODUCT"
+    ]
+}
+```
+* Consulta
+
+    `FindAccounts`

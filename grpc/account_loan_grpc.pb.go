@@ -23,6 +23,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountServiceRequestClient interface {
 	CreateAccounts(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	CreateAccountsStream(ctx context.Context, opts ...grpc.CallOption) (AccountServiceRequest_CreateAccountsStreamClient, error)
+	CreateAccountsStreamBidirecional(ctx context.Context, opts ...grpc.CallOption) (AccountServiceRequest_CreateAccountsStreamBidirecionalClient, error)
 	FindAccounts(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*FindAccountsResponse, error)
 }
 
@@ -43,6 +45,71 @@ func (c *accountServiceRequestClient) CreateAccounts(ctx context.Context, in *Cr
 	return out, nil
 }
 
+func (c *accountServiceRequestClient) CreateAccountsStream(ctx context.Context, opts ...grpc.CallOption) (AccountServiceRequest_CreateAccountsStreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &AccountServiceRequest_ServiceDesc.Streams[0], "/grpc.AccountServiceRequest/CreateAccountsStream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &accountServiceRequestCreateAccountsStreamClient{stream}
+	return x, nil
+}
+
+type AccountServiceRequest_CreateAccountsStreamClient interface {
+	Send(*CreateRequest) error
+	CloseAndRecv() (*CreateResponseList, error)
+	grpc.ClientStream
+}
+
+type accountServiceRequestCreateAccountsStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *accountServiceRequestCreateAccountsStreamClient) Send(m *CreateRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *accountServiceRequestCreateAccountsStreamClient) CloseAndRecv() (*CreateResponseList, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(CreateResponseList)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *accountServiceRequestClient) CreateAccountsStreamBidirecional(ctx context.Context, opts ...grpc.CallOption) (AccountServiceRequest_CreateAccountsStreamBidirecionalClient, error) {
+	stream, err := c.cc.NewStream(ctx, &AccountServiceRequest_ServiceDesc.Streams[1], "/grpc.AccountServiceRequest/CreateAccountsStreamBidirecional", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &accountServiceRequestCreateAccountsStreamBidirecionalClient{stream}
+	return x, nil
+}
+
+type AccountServiceRequest_CreateAccountsStreamBidirecionalClient interface {
+	Send(*CreateRequest) error
+	Recv() (*CreateResponse, error)
+	grpc.ClientStream
+}
+
+type accountServiceRequestCreateAccountsStreamBidirecionalClient struct {
+	grpc.ClientStream
+}
+
+func (x *accountServiceRequestCreateAccountsStreamBidirecionalClient) Send(m *CreateRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *accountServiceRequestCreateAccountsStreamBidirecionalClient) Recv() (*CreateResponse, error) {
+	m := new(CreateResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *accountServiceRequestClient) FindAccounts(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*FindAccountsResponse, error) {
 	out := new(FindAccountsResponse)
 	err := c.cc.Invoke(ctx, "/grpc.AccountServiceRequest/FindAccounts", in, out, opts...)
@@ -57,6 +124,8 @@ func (c *accountServiceRequestClient) FindAccounts(ctx context.Context, in *Empt
 // for forward compatibility
 type AccountServiceRequestServer interface {
 	CreateAccounts(context.Context, *CreateRequest) (*CreateResponse, error)
+	CreateAccountsStream(AccountServiceRequest_CreateAccountsStreamServer) error
+	CreateAccountsStreamBidirecional(AccountServiceRequest_CreateAccountsStreamBidirecionalServer) error
 	FindAccounts(context.Context, *Empty) (*FindAccountsResponse, error)
 	mustEmbedUnimplementedAccountServiceRequestServer()
 }
@@ -67,6 +136,12 @@ type UnimplementedAccountServiceRequestServer struct {
 
 func (UnimplementedAccountServiceRequestServer) CreateAccounts(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccounts not implemented")
+}
+func (UnimplementedAccountServiceRequestServer) CreateAccountsStream(AccountServiceRequest_CreateAccountsStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method CreateAccountsStream not implemented")
+}
+func (UnimplementedAccountServiceRequestServer) CreateAccountsStreamBidirecional(AccountServiceRequest_CreateAccountsStreamBidirecionalServer) error {
+	return status.Errorf(codes.Unimplemented, "method CreateAccountsStreamBidirecional not implemented")
 }
 func (UnimplementedAccountServiceRequestServer) FindAccounts(context.Context, *Empty) (*FindAccountsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindAccounts not implemented")
@@ -100,6 +175,58 @@ func _AccountServiceRequest_CreateAccounts_Handler(srv interface{}, ctx context.
 		return srv.(AccountServiceRequestServer).CreateAccounts(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _AccountServiceRequest_CreateAccountsStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(AccountServiceRequestServer).CreateAccountsStream(&accountServiceRequestCreateAccountsStreamServer{stream})
+}
+
+type AccountServiceRequest_CreateAccountsStreamServer interface {
+	SendAndClose(*CreateResponseList) error
+	Recv() (*CreateRequest, error)
+	grpc.ServerStream
+}
+
+type accountServiceRequestCreateAccountsStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *accountServiceRequestCreateAccountsStreamServer) SendAndClose(m *CreateResponseList) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *accountServiceRequestCreateAccountsStreamServer) Recv() (*CreateRequest, error) {
+	m := new(CreateRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _AccountServiceRequest_CreateAccountsStreamBidirecional_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(AccountServiceRequestServer).CreateAccountsStreamBidirecional(&accountServiceRequestCreateAccountsStreamBidirecionalServer{stream})
+}
+
+type AccountServiceRequest_CreateAccountsStreamBidirecionalServer interface {
+	Send(*CreateResponse) error
+	Recv() (*CreateRequest, error)
+	grpc.ServerStream
+}
+
+type accountServiceRequestCreateAccountsStreamBidirecionalServer struct {
+	grpc.ServerStream
+}
+
+func (x *accountServiceRequestCreateAccountsStreamBidirecionalServer) Send(m *CreateResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *accountServiceRequestCreateAccountsStreamBidirecionalServer) Recv() (*CreateRequest, error) {
+	m := new(CreateRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func _AccountServiceRequest_FindAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -136,6 +263,18 @@ var AccountServiceRequest_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AccountServiceRequest_FindAccounts_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "CreateAccountsStream",
+			Handler:       _AccountServiceRequest_CreateAccountsStream_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "CreateAccountsStreamBidirecional",
+			Handler:       _AccountServiceRequest_CreateAccountsStreamBidirecional_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/account_loan.proto",
 }

@@ -7,6 +7,7 @@ import (
 	"encoder/graph/model"
 	"encoder/grpc"
 	"encoder/model/repository"
+	"io"
 	"strings"
 )
 
@@ -112,6 +113,66 @@ func (s AcccountService) CreateAccounts(ctx context.Context, request *grpc.Creat
 	return &grpc.CreateResponse{
 		IsStarted: resp,
 	}, nil
+}
+
+func (s AcccountService) CreateAccountsStreamBidirecional(stream grpc.AccountServiceRequest_CreateAccountsStreamBidirecionalServer) error {
+	for {
+		request, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+
+		if err != nil {
+			return err
+		}
+
+		message := producer.Message{
+			TypeAccount: int(request.GetTypeAccount()),
+			Qtd:         int(request.GetQuantity()),
+			Products:    request.Products,
+		}
+
+		resp, errr := producer.ProduceMessage(message)
+		if errr != nil {
+			return errr
+		}
+
+		err = stream.Send(&grpc.CreateResponse{IsStarted: resp})
+		if err != nil {
+			return err
+		}
+	}
+
+}
+
+func (s AcccountService) CreateAccountsStream(stream grpc.AccountServiceRequest_CreateAccountsStreamServer) error {
+	responseList := &grpc.CreateResponseList{}
+
+	for {
+		request, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(responseList)
+		}
+
+		if err != nil {
+			return err
+		}
+
+		message := producer.Message{
+			TypeAccount: int(request.GetTypeAccount()),
+			Qtd:         int(request.GetQuantity()),
+			Products:    request.Products,
+		}
+
+		resp, errr := producer.ProduceMessage(message)
+		if errr != nil {
+			return errr
+		}
+
+		responseList.ListIsStarted = append(responseList.ListIsStarted, &grpc.CreateResponse{
+			IsStarted: resp,
+		})
+	}
 }
 
 func (s AcccountService) FindAccounts(ctx context.Context, em *grpc.Empty) (*grpc.FindAccountsResponse, error) {

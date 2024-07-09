@@ -21,6 +21,9 @@ message FindAccountsResponse {
     repeated Account accounts = 1;
 }
 
+message CreateResponseList {
+    repeated CreateResponse listIsStarted = 1;
+}
 
 message CreateResponse {
     bool isStarted = 1;
@@ -36,5 +39,7 @@ message Empty {}
 
 service AccountServiceRequest {
     rpc CreateAccounts(CreateRequest) returns (CreateResponse) {}
+    rpc CreateAccountsStream(stream CreateRequest) returns (CreateResponseList) {}
+    rpc CreateAccountsStreamBidirecional(stream CreateRequest) returns (stream CreateResponse) {}
     rpc FindAccounts(Empty) returns (FindAccountsResponse) {}
 }
