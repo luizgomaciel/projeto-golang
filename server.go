@@ -16,8 +16,10 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+
 	"github.com/joho/godotenv"
 	"github.com/streadway/amqp"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	gr "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -39,7 +41,7 @@ func init() {
 func main() {
 	var wg sync.WaitGroup
 
-	wg.Add(3)
+	wg.Add(4)
 
 	go func() {
 		defer wg.Done()
@@ -54,6 +56,11 @@ func main() {
 	go func() {
 		defer wg.Done()
 		initGRPC()
+	}()
+
+	go func() {
+		defer wg.Done()
+		initRest()
 	}()
 
 	wg.Wait()
@@ -106,6 +113,10 @@ func initTDM() {
 	jobManager.Start(ch)
 
 	log.Println("Iniciou TDM")
+}
+
+func initRest() {
+
 }
 
 func initGraphQL() {

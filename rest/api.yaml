@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: Service TDM
+  version: 1.0.0
+servers:
+  - url: http://localhost:8091
+tags:
+  - name: tdms
+    description: Endpoint TDM
+paths:
+  /tdms/create:
+    post:
+      tags:
+        - tdms
+      summary: Solicita massa pool de massa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                typeAccount:
+                  type: integer
+                  example: 2
+                qtd:
+                  type: integer
+                  example: 10
+                products:
+                  type: array
+                  items:
+                    type: string
+                    example: LOAN_PRODUCT
+      responses:
+        '201':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isStarted:
+                    type: boolean
+                    example: true
+  /tdms/find:
+    get:
+      tags:
+        - tdms
+      summary: Retorna todos objetos disponíveis
+      responses:
+        '200':
+          description: Sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  account:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        accountNumber:
+                          type: string
+                          example: '5755508150'
+                        accountType:
+                          type: string
+                          example: CONTA_CORRENTE_1
+                        customerName:
+                          type: string
+                          example: Luiz Gustavo
+                        loanProducts:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                example: cdaf802b-f39f-4f98-84a9-c45efde6ba01
+                              loanType:
+                                type: string
+                                example: LOAN_1000
+                              numberInstallments:
+                                type: integer
+                                example: 10
+                              valueInstallments:
+                                type: number
+                                format: float
+                                example: 903.32
+                              totalInstalments:
+                                type: number
+                                format: float
+                                example: 9033.24
