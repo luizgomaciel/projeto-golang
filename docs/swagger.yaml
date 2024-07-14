@@ -1,0 +1,10 @@
+basePath: /
+host: tdm.swagger.io
+info:
+  contact: {}
+  description: This is a sample server TDM server.
+  termsOfService: http://swagger.io/terms/
+  title: Swagger API TDM
+  version: "1.0"
+paths: {}
+swagger: "2.0"

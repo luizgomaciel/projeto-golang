@@ -1,0 +1,13 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample server TDM server.",
+        "title": "Swagger API TDM",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "tdm.swagger.io",
+    "basePath": "/",
+    "paths": {}
+}

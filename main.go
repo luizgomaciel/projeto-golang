@@ -20,6 +20,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/streadway/amqp"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	"go.mongodb.org/mongo-driver/mongo"
 	gr "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -28,6 +30,7 @@ import (
 var db config.Database
 var dbMongoConnection = make(chan *mongo.Database)
 var dbMongoConnection2 = make(chan *mongo.Database)
+var dbMongoConnection3 = make(chan *mongo.Database)
 
 const defaultPort = "8080"
 
@@ -98,6 +101,7 @@ func initTDM() {
 	dbConnection, err := db.Connect()
 	dbMongoConnection <- dbConnection
 	dbMongoConnection2 <- dbConnection
+	dbMongoConnection3 <- dbConnection
 
 	if err != nil {
 		log.Fatalf("error connecting to DB")
@@ -115,8 +119,45 @@ func initTDM() {
 	log.Println("Iniciou TDM")
 }
 
-func initRest() {
+// @title Swagger API TDM
+// @version 1.0
+// @description This is a sample server TDM server.
+// @termsOfService http://swagger.io/terms/
 
+// @host tdm.swagger.io
+// @BasePath /
+func initRest() {
+	app := fiber.New()
+
+	repoAccount := repository.AccountRepositoryDb{
+		Db: <-dbMongoConnection3,
+	}
+
+	// @Summary Get available accounts
+	// @Description Get all available accounts
+	// @Tags accounts
+	// @Produce json
+	// @Success 200 {array} services.Account
+	// @Failure 500 {object} fiber.Map
+	// @Router / [get]
+	app.Get("/", func(c *fiber.Ctx) error {
+		accountService := services.NewAccountService()
+		accountService.AccountRepository = repoAccount
+
+		resp, err := accountService.FindAvailableAccounts()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+
+		return c.JSON(resp)
+	})
+
+	// Swagger route
+	app.Get("/swagger/*", swagger.HandlerDefault)
+
+	log.Fatal(app.Listen(":8091"))
 }
 
 func initGraphQL() {
